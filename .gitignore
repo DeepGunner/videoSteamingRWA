@@ -26,3 +26,4 @@ yarn-error.log*
 # Custom Ignores
 /server/videos
 /server/cache
+/server/.env

@@ -5,6 +5,10 @@ const os = require('os');
 const cors = require('cors');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
+// Load environment variables from .env file in the server directory
+require('dotenv').config();
+const Brevo = require('@getbrevo/brevo');
+
 const { PassThrough } = require('stream');
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
@@ -51,6 +55,7 @@ if (!fs.existsSync(thumbnailsDir)) {
 }
 
 app.use(cors());
+app.use(express.json()); // Middleware to parse JSON bodies
 app.use('/thumbnails', express.static(thumbnailsDir)); // Serve thumbnails statically
 
 function generateThumbnail(videoFilename) {
@@ -110,6 +115,38 @@ app.get('/videos', async (req, res) => {
     } catch (err) {
         console.error("Could not list the directory or generate thumbnails.", err);
         res.status(500).send('Internal Server Error');
+    }
+});
+
+// Endpoint to handle movie requests
+app.post('/request', async (req, res) => {
+    const { movieTitle } = req.body;
+
+    if (!movieTitle) {
+        return res.status(400).send({ message: 'Movie title is required.' });
+    }
+
+    // Brevo API setup
+    const defaultClient = Brevo.ApiClient.instance;
+    const apiKey = defaultClient.authentications['api-key'];
+    apiKey.apiKey = process.env.BREVO_API_KEY;
+
+    const apiInstance = new Brevo.TransactionalEmailsApi();
+    const sendSmtpEmail = new Brevo.SendSmtpEmail();
+
+    sendSmtpEmail.to = [{ email: process.env.TO_EMAIL_ADDRESS }];
+    // Note: The sender email must be a verified sender in your Brevo account.
+    sendSmtpEmail.sender = { email: process.env.FROM_EMAIL_ADDRESS, name: "Shruti's Vault" };
+    sendSmtpEmail.subject = `New Movie Request: ${movieTitle}`;
+    sendSmtpEmail.htmlContent = `<strong>Shruti has requested the movie:</strong> <p>"${movieTitle}"</p>`;
+
+    try {
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log(`Request email sent for: ${movieTitle}`);
+        res.status(200).send({ message: 'Request sent successfully!' });
+    } catch (error) {
+        console.error('Error sending email with Brevo:', error);
+        res.status(500).send({ message: 'Failed to send request.' });
     }
 });
 
