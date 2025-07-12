@@ -1,0 +1,20 @@
+.app-footer {
+  padding: 1.5rem 2rem;
+  text-align: center;
+  color: var(--text-color-darker);
+  font-size: 0.9rem;
+  background-color: var(--card-background);
+  border-top: 1px solid var(--secondary-background);
+  transition: background-color 0.3s ease, color 0.3s ease, border-top-color 0.3s ease;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+/* --- Neo-Brutalism Overrides --- */
+[data-theme='neo-brutalism'] .app-footer,
+[data-theme='dark-brutalism'] .app-footer {
+  border-top: 3px solid var(--text-color);
+  font-weight: 700;
+}

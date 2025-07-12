@@ -1,0 +1,61 @@
+.skeleton-card {
+  background-color: var(--card-background);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+@keyframes skeleton-pulse {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+.skeleton-thumbnail,
+.skeleton-title,
+.skeleton-description {
+  background-color: var(--text-color-darker);
+  opacity: 0.5;
+  animation: skeleton-pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-thumbnail {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.skeleton-info {
+  padding: 0.75rem 1rem;
+}
+
+.skeleton-title {
+  height: 1em;
+  width: 80%;
+  margin-bottom: 0.75rem;
+  border-radius: 4px;
+}
+
+.skeleton-description {
+  height: 1em;
+  width: 60%;
+  border-radius: 4px;
+}
+
+/* --- Neo-Brutalism Overrides --- */
+[data-theme='neo-brutalism'] .skeleton-card,
+[data-theme='dark-brutalism'] .skeleton-card {
+  border: 3px solid var(--text-color);
+  box-shadow: 6px 6px 0px var(--text-color);
+  border-radius: 0;
+}
+
+[data-theme='neo-brutalism'] .skeleton-thumbnail,
+[data-theme='dark-brutalism'] .skeleton-thumbnail {
+  border-bottom: 3px solid var(--text-color);
+}

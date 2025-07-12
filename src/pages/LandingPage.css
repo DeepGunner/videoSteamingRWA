@@ -1,0 +1,114 @@
+.video-gallery {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 4rem 1.5rem; /* Increased row-gap to prevent overlap on hover */
+}
+
+.video-card-container {
+  /* This container holds the space in the grid. */
+  position: relative;
+}
+
+.video-card {
+  /* This is the visual card that will be transformed. */
+  display: block; /* Make the link a block-level element */
+  background-color: var(--card-background);
+  text-decoration: none;
+  color: var(--text-color);
+  border-radius: 12px; /* Soft round edges */
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: relative; /* Fallback for non-hovered state */
+  z-index: 1;
+}
+
+.video-card-container:hover .video-card {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  /* Position absolutely to break out of grid constraints on hover */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.video-card-thumbnail {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+
+.video-card-info {
+  /* This container holds the text content below the thumbnail */
+  padding: 0.75rem 1rem;
+}
+
+.video-card-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-color);
+}
+
+.video-card-description {
+  font-size: 0.8rem;
+  color: var(--text-color-darker);
+  margin: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.35s ease, margin-top 0.35s ease;
+}
+
+.video-card-container:hover .video-card-description {
+  margin-top: 0.75rem; /* Adds space between title and description on hover */
+  max-height: 5em; /* Approx 3-4 lines */
+  opacity: 1;
+}
+
+/* --- Neo-Brutalism Overrides --- */
+[data-theme='neo-brutalism'] .video-card,
+[data-theme='dark-brutalism'] .video-card {
+  border: 3px solid var(--text-color);
+  box-shadow: 6px 6px 0px var(--text-color);
+  transition: all 0.2s ease-in-out;
+  border-radius: 0;
+  position: static; /* Brutalism doesn't need the absolute positioning trick */
+}
+
+[data-theme='neo-brutalism'] .video-card-container:hover .video-card,
+[data-theme='dark-brutalism'] .video-card-container:hover .video-card {
+  transform: translate(-4px, -4px);
+  box-shadow: 10px 10px 0 var(--text-color);
+  position: static; /* Keep it in the flow for this theme */
+}
+
+[data-theme='neo-brutalism'] .video-card-thumbnail,
+[data-theme='dark-brutalism'] .video-card-thumbnail {
+  border-bottom: 3px solid var(--text-color);
+  border-radius: 0; /* Sharp corners */
+}
+
+[data-theme='neo-brutalism'] .video-card-title,
+[data-theme='dark-brutalism'] .video-card-title {
+  font-weight: 700;
+}

@@ -1,0 +1,207 @@
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const cors = require('cors');
+const ffmpeg = require('fluent-ffmpeg');
+const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
+const { PassThrough } = require('stream');
+
+ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+
+const app = express();
+const port = 4000;
+const videosDir = path.join(__dirname, 'videos');
+const cacheDir = path.join(__dirname, 'cache');
+const thumbnailsDir = path.join(cacheDir, 'thumbnails');
+
+// A map of supported video file extensions to their MIME types
+const mimeTypes = {
+    '.mp4': 'video/mp4',
+    '.mov': 'video/quicktime',
+    '.mkv': 'video/x-matroska',
+};
+
+// Ensure the videos directory exists
+if (!fs.existsSync(videosDir)) {
+    fs.mkdirSync(videosDir);
+    console.log(`Created videos directory at ${videosDir}`);
+    console.log('Please add some .mp4 video files to it.');
+}
+
+// Ensure the cache directory exists
+if (!fs.existsSync(cacheDir)) {
+    fs.mkdirSync(cacheDir);
+    console.log(`Created cache directory at ${cacheDir}`);
+}
+
+// Ensure the thumbnails directory exists
+if (!fs.existsSync(thumbnailsDir)) {
+    fs.mkdirSync(thumbnailsDir);
+    console.log(`Created thumbnails directory at ${thumbnailsDir}`);
+}
+
+app.use(cors());
+app.use('/thumbnails', express.static(thumbnailsDir)); // Serve thumbnails statically
+
+function generateThumbnail(videoFilename) {
+    return new Promise((resolve, reject) => {
+        const videoPath = path.join(videosDir, videoFilename);
+        const thumbnailFilename = `${videoFilename}.jpg`;
+        const thumbnailPath = path.join(thumbnailsDir, thumbnailFilename);
+
+        if (fs.existsSync(thumbnailPath)) {
+            return resolve();
+        }
+
+        console.log(`Generating thumbnail for ${videoFilename}...`);
+        ffmpeg(videoPath)
+            .on('error', (err) => {
+                console.error(`Error generating thumbnail for ${videoFilename}:`, err.message);
+                reject(err);
+            })
+            .on('end', () => {
+                console.log(`Thumbnail generated for ${videoFilename}`);
+                resolve();
+            })
+            .screenshots({
+                timestamps: ['1%'],
+                filename: thumbnailFilename,
+                folder: thumbnailsDir,
+                size: '320x180',
+            });
+    });
+}
+
+// Endpoint to get the list of videos
+app.get('/videos', async (req, res) => {
+    try {
+        const files = await fs.promises.readdir(videosDir);
+        const supportedFiles = files.filter(file => mimeTypes[path.extname(file).toLowerCase()]);
+
+        // Generate thumbnails for all videos if they don't exist
+        await Promise.all(supportedFiles.map(file => generateThumbnail(file)));
+
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+
+        const videoFiles = supportedFiles.map(file => ({
+            filename: file,
+            type: 'video/mp4', // We serve everything as mp4
+            thumbnailUrl: `${baseUrl}/thumbnails/${file}.jpg`
+        }));
+
+        console.log('Serving video files with thumbnails:', videoFiles);
+        res.json(videoFiles);
+    } catch (err) {
+        console.error("Could not list the directory or generate thumbnails.", err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+async function streamMp4(filePath, req, res) {
+    try {
+        const stat = await fs.promises.stat(filePath);
+        const fileSize = stat.size;
+        const range = req.headers.range;
+
+        if (range) {
+            const parts = range.replace(/bytes=/, "").split("-");
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+            const chunksize = (end - start) + 1;
+            const file = fs.createReadStream(filePath, { start, end });
+            const head = {
+                'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+                'Accept-Ranges': 'bytes',
+                'Content-Length': chunksize,
+                'Content-Type': 'video/mp4',
+            };
+            res.writeHead(206, head);
+            file.pipe(res);
+        } else {
+            const head = {
+                'Content-Length': fileSize,
+                'Content-Type': 'video/mp4',
+            };
+            res.writeHead(200, head);
+            fs.createReadStream(filePath).pipe(res);
+        }
+    } catch (error) {
+        console.error(`Error streaming mp4: ${filePath}`, error);
+        if (!res.headersSent) {
+            res.status(500).send('Error streaming file.');
+        }
+    }
+}
+
+// Endpoint to stream a video
+app.get('/video/:filename', async (req, res) => {
+    const { filename } = req.params;
+    const videoPath = path.join(videosDir, filename);
+
+    try {
+        await fs.promises.access(videoPath);
+    } catch (error) {
+        return res.status(404).send('File not found');
+    }
+
+    const extension = path.extname(filename).toLowerCase();    
+
+    if (extension === '.mp4') {
+        return await streamMp4(videoPath, req, res);
+    }
+
+    if (extension === '.mov' || extension === '.mkv') {
+        const cachedFileName = `${filename}.mp4`;
+        const cachedFilePath = path.join(cacheDir, cachedFileName);
+
+        try {
+            // Check if a cached version exists, stream it directly if so.
+            await fs.promises.access(cachedFilePath);
+            console.log(`Serving cached version for: ${filename}`);
+            return await streamMp4(cachedFilePath, req, res);
+        } catch (error) {
+            // If not, transcode, cache, and stream it on-the-fly.
+            console.log(`Transcoding, caching, and streaming on-the-fly: ${filename}`);
+
+            res.writeHead(200, { 'Content-Type': 'video/mp4' });
+
+            const ffmpegProcess = ffmpeg(videoPath)
+                .format('mp4')
+                .outputOptions('-movflags frag_keyframe+empty_moov') // Makes the mp4 streamable
+                .on('error', (err) => {
+                    console.error('ffmpeg error:', err.message);
+                    if (!res.writableEnded) {
+                        res.end(); // End the response if an error occurs
+                    }
+                });
+
+            const passthrough = new PassThrough();
+            // Pipe ffmpeg's output to the passthrough stream
+            ffmpegProcess.pipe(passthrough);
+
+            // Pipe the passthrough stream to both the response and the cache file
+            passthrough.pipe(res);
+            passthrough.pipe(fs.createWriteStream(cachedFilePath));
+        }
+    } else {
+        res.status(400).send('Unsupported file format');
+    }
+});
+
+const host = '0.0.0.0'; // Listen on all available network interfaces
+
+app.listen(port, host, () => {
+    console.log(`✅ Video streaming server is running!`);
+    console.log(`\nOn your computer, access it at:`);
+    console.log(`- Local:   http://localhost:${port}`);
+
+    const interfaces = os.networkInterfaces();
+    Object.keys(interfaces).forEach(devName => {
+        const ifaceDetails = interfaces[devName].find(iface => iface.family === 'IPv4' && !iface.internal);
+        if (ifaceDetails) {
+            console.log(`\nFor other devices on the same network (like your phone):`);
+            console.log(`- Network: http://${ifaceDetails.address}:${port}`);
+        }
+    });
+});

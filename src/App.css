@@ -1,0 +1,168 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.app-body {
+  flex: 1; /* This makes the main content area grow to fill available space */
+}
+
+.main-content {
+  display: flex;
+  flex-direction: row;
+  padding: 0 2rem;
+  gap: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.video-player-section {
+  /* Use flex: 1 to allow the section to grow and shrink properly. */
+  flex: 1;
+  min-width: 0; /* Prevents the player from overflowing on smaller screens */
+}
+
+.video-player-container {
+  position: relative;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  background-color: #000;
+  border-radius: 8px;
+  border: none;
+  overflow: hidden;
+}
+
+.video-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.placeholder-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--text-color-darker);
+  font-size: 1.2rem;
+}
+
+.video-title {
+  margin-top: 1rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.video-list-section {
+  width: 350px;
+  flex-shrink: 0;
+  background-color: transparent;
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+.video-list-section h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  border-bottom: 1px solid var(--secondary-background);
+  padding-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.video-list-item-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease-in-out;
+  color: var(--text-color);
+}
+
+.video-list-item-link:hover {
+  background-color: var(--card-background);
+}
+
+.video-list-item-link.active {
+  background-color: var(--secondary-background);
+  font-weight: 600;
+  border-left: 3px solid var(--primary-color);
+}
+
+.video-list-thumbnail {
+  width: 120px;
+  height: 67.5px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+  border: none;
+}
+
+.video-list-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 992px) {
+  .main-content {
+    flex-direction: column;
+  }
+  .video-list-section {
+    width: 100%;
+  }
+}
+
+.error-message {
+  color: var(--primary-color);
+  padding: 1rem;
+  background-color: var(--card-background);
+  border: 1px solid var(--primary-color);
+  border-radius: 4px;
+}
+
+.loading-text {
+  font-size: 1.2rem;
+  color: var(--text-color-darker);
+}
+
+/* --- Neo-Brutalism Overrides --- */
+[data-theme='neo-brutalism'] .video-player-container,
+[data-theme='dark-brutalism'] .video-player-container,
+[data-theme='neo-brutalism'] .video-list-section,
+[data-theme='dark-brutalism'] .video-list-section {
+  border: 3px solid var(--text-color);
+  box-shadow: 6px 6px 0px var(--text-color);
+  border-radius: 0;
+}
+
+[data-theme='neo-brutalism'] .video-list-section,
+[data-theme='dark-brutalism'] .video-list-section {
+  background-color: var(--card-background);
+}
+
+[data-theme='neo-brutalism'] .video-list-item-link,
+[data-theme='dark-brutalism'] .video-list-item-link {
+  border-radius: 0;
+}
+
+[data-theme='neo-brutalism'] .video-list-item-link.active,
+[data-theme='dark-brutalism'] .video-list-item-link.active {
+  background-color: var(--primary-color);
+  color: var(--card-background); /* White text on magenta */
+  border: 3px solid var(--text-color);
+  box-shadow: 2px 2px 0 var(--text-color);
+}
+
+[data-theme='neo-brutalism'] .video-list-thumbnail,
+[data-theme='dark-brutalism'] .video-list-thumbnail {
+  border: 3px solid var(--text-color);
+  border-radius: 0;
+}

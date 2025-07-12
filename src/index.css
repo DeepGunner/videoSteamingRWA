@@ -1,0 +1,142 @@
+@keyframes move-bg {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Netflix Theme */
+body[data-theme='netflix'] {
+  --background-color: #141414;
+  --text-color: #e5e5e5;
+  --text-color-darker: #8c8c8c;
+  --primary-color: #e50914;
+  --primary-color-hover: #f40612;
+  --card-background: #1f1f1f;
+  --secondary-background: #303030;
+  background: var(--background-color);
+  animation: none;
+}
+
+/* Light Theme */
+body[data-theme='light'] {
+  --background-color: #f8f9fa;
+  --text-color: #212529;
+  --text-color-darker: #6c757d;
+  --primary-color: #007bff;
+  --primary-color-hover: #0056b3;
+  --card-background: #e9ecef;
+  --secondary-background: #dde8f5;
+  background: var(--background-color);
+  animation: none;
+}
+
+/* Aurora Theme */
+body[data-theme='aurora'] {
+  --background-color: #0d0c22;
+  --text-color: #e0e0e0;
+  --text-color-darker: #a0a0a0;
+  --primary-color: #8a42f4;
+  --primary-color-hover: #a871f7;
+  --card-background: rgba(255, 255, 255, 0.05);
+  --secondary-background: rgba(138, 66, 244, 0.3);
+
+  background: linear-gradient(45deg, rgba(138, 66, 244, 0.3) 0%, transparent 70%),
+    linear-gradient(135deg, rgba(0, 191, 255, 0.3) 10%, transparent 80%),
+    linear-gradient(225deg, rgba(255, 87, 180, 0.3) 10%, transparent 80%),
+    linear-gradient(315deg, rgba(138, 66, 244, 0.4) 100%, transparent 70%);
+  background-color: var(--background-color);
+  background-size: 400% 400%;
+  animation: move-bg 15s ease-in-out infinite;
+}
+
+/* Neo-Brutalism Theme */
+body[data-theme='neo-brutalism'] {
+  --background-color: #fdf33b;
+  --text-color: #000000;
+  --text-color-darker: #333333;
+  --primary-color: #ff00ff;
+  --primary-color-hover: #cc00cc;
+  --card-background: #ffffff;
+  --secondary-background: #ffffff;
+  --font-family-override: 'Courier New', Courier, monospace;
+  background: var(--background-color);
+  animation: none;
+}
+
+/* Pastel Dream Theme */
+body[data-theme='pastel-dream'] {
+  --background-color: #f5f5f5;
+  --text-color: #424242;
+  --text-color-darker: #757575;
+  --primary-color: #7986cb; /* Muted Indigo */
+  --primary-color-hover: #9fa8da;
+  --card-background: rgba(255, 255, 255, 0.6);
+  --secondary-background: rgba(121, 134, 203, 0.2);
+
+  background: linear-gradient(45deg, rgba(121, 134, 203, 0.5) 0%, transparent 70%), /* Muted Indigo */
+    linear-gradient(135deg, rgba(255, 173, 173, 0.5) 10%, transparent 80%), /* Muted Red */
+    linear-gradient(225deg, rgba(174, 213, 129, 0.5) 10%, transparent 80%), /* Muted Green */
+    linear-gradient(315deg, rgba(255, 204, 128, 0.5) 100%, transparent 70%); /* Muted Orange */
+  background-color: var(--background-color);
+  background-size: 400% 400%;
+  animation: move-bg 15s ease-in-out infinite;
+}
+
+/* Render Dark Theme */
+body[data-theme='render-dark'] {
+  --background-color: #101112;
+  --text-color: #e0e0e0;
+  --text-color-darker: #888888;
+  --primary-color: #4dffc4;
+  --primary-color-hover: #79ffd1;
+  --card-background: #1c1d1f;
+  --secondary-background: #2d2e30;
+  background: var(--background-color);
+  animation: none;
+}
+
+/* Dark Brutalism Theme */
+body[data-theme='dark-brutalism'] {
+  --background-color: #1a1a1a;
+  --text-color: #f0f0f0;
+  --text-color-darker: #aaaaaa;
+  --primary-color: #00ff00; /* Neon Green */
+  --primary-color-hover: #33ff33;
+  --card-background: #2a2a2a;
+  --secondary-background: #2a2a2a;
+  --font-family-override: 'Courier New', Courier, monospace;
+  background: var(--background-color);
+  animation: none;
+}
+
+body {
+  margin: 0;
+  /* Allow theme to override the font, otherwise use system default */
+  font-family: var(--font-family-override, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+  color: var(--primary-color-hover);
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

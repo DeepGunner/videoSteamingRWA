@@ -1,0 +1,127 @@
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: transparent;
+  padding: 20px 40px;
+  margin-bottom: 2rem;
+}
+
+.header-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo {
+  position: relative; /* For the shimmer effect */
+  display: flex; /* To align the letters */
+  font-size: 2.5rem;
+  font-weight: 900;
+  line-height: 1;
+  font-family: 'Helvetica Neue', sans-serif;
+  letter-spacing: -2px;
+  overflow: hidden; /* To hide the slide-in effect initially */
+}
+
+.logo::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(to right, transparent 0%, transparent 45%, rgba(255, 255, 255, 0.5) 50%, transparent 55%, transparent 100%);
+  transform: translateX(-100%) rotate(-30deg);
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none; /* So it doesn't block hover on text */
+}
+
+.logo-char {
+  display: inline-block;
+  color: var(--primary-color);
+  transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.3s ease;
+  /* Initial slide-in animation */
+  animation: logo-appear 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation-delay: calc(var(--i) * 0.1s);
+}
+
+@keyframes logo-appear {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.header-title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+
+.header-logo-link:hover .logo::after {
+  transform: translateX(100%) rotate(-30deg);
+}
+
+.header-logo-link:hover .logo-char {
+  text-shadow: 0 0 15px var(--primary-color);
+  transform: scale(1.05);
+}
+
+/* --- Theme Specific Logo Styles --- */
+
+[data-theme='netflix'] .logo-char {
+  color: #e50914;
+  text-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+[data-theme='light'] .logo-char {
+  color: #007bff;
+}
+
+[data-theme='aurora'] .logo-char {
+  color: #8a42f4;
+  text-shadow: 0 0 10px rgba(138, 66, 244, 0.5);
+}
+
+[data-theme='pastel-dream'] .logo-char {
+  color: #7986cb;
+}
+
+[data-theme='render-dark'] .logo-char {
+  color: #4dffc4;
+  text-shadow: 0 0 8px rgba(77, 255, 196, 0.3);
+}
+
+[data-theme='neo-brutalism'] .logo-char,
+[data-theme='dark-brutalism'] .logo-char {
+  -webkit-text-stroke: 2px var(--text-color);
+  color: transparent;
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: normal;
+}
+
+[data-theme='neo-brutalism'] .logo,
+[data-theme='dark-brutalism'] .logo {
+  overflow: visible; /* Brutalism doesn't hide things */
+}
+
+[data-theme='neo-brutalism'] .header-logo-link:hover .logo-char,
+[data-theme='dark-brutalism'] .header-logo-link:hover .logo-char {
+  text-shadow: none; /* Disable effects for brutalism */
+  transform: none;
+}
+
+[data-theme='neo-brutalism'] .app-header,
+[data-theme='dark-brutalism'] .app-header {
+  border: 3px solid var(--text-color);
+  box-shadow: 6px 6px 0px var(--text-color);
+  border-radius: 0;
+}
+
+[data-theme='neo-brutalism'] .logo::after,
+[data-theme='dark-brutalism'] .logo::after {
+  display: none; /* Disable shimmer for brutalism */
+}
