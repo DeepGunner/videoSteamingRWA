@@ -24,7 +24,8 @@
 
 .video-card {
   /* This is the visual card that will be transformed. */
-  display: block; /* Make the link a block-level element */
+  display: flex; /* Use flexbox for a more robust layout */
+  flex-direction: column; /* Stack the thumbnail and info vertically */
   background-color: var(--card-background);
   text-decoration: none;
   color: var(--text-color);
@@ -36,15 +37,10 @@
   z-index: 1;
 }
 
-.video-card-container:hover .video-card {
-  transform: scale(1.1);
-  z-index: 10;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-  /* Position absolutely to break out of grid constraints on hover */
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+/* Simple tap feedback for touch devices */
+.video-card:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease-out;
 }
 
 .video-card-thumbnail {
@@ -52,6 +48,7 @@
   aspect-ratio: 16 / 9;
   object-fit: cover;
   display: block;
+  flex-shrink: 0; /* Prevent the image from shrinking */
 }
 
 .video-card-info {
@@ -79,10 +76,31 @@
   transition: max-height 0.35s ease, opacity 0.35s ease, margin-top 0.35s ease;
 }
 
-.video-card-container:hover .video-card-description {
-  margin-top: 0.75rem; /* Adds space between title and description on hover */
-  max-height: 5em; /* Approx 3-4 lines */
-  opacity: 1;
+/* --- Hover effects for devices that support it (desktops) --- */
+@media (hover: hover) and (pointer: fine) {
+  .video-card-container:hover .video-card {
+    transform: scale(1.1);
+    z-index: 10;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    /* Position absolutely to break out of grid constraints on hover */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .video-card-container:hover .video-card-description {
+    margin-top: 0.75rem; /* Adds space between title and description on hover */
+    max-height: 5em; /* Approx 3-4 lines */
+    opacity: 1;
+  }
+
+  [data-theme='neo-brutalism'] .video-card-container:hover .video-card,
+  [data-theme='dark-brutalism'] .video-card-container:hover .video-card {
+    transform: translate(-4px, -4px);
+    box-shadow: 10px 10px 0 var(--text-color);
+    position: static; /* Keep it in the flow for this theme */
+  }
 }
 
 /* --- Neo-Brutalism Overrides --- */
@@ -93,13 +111,6 @@
   transition: all 0.2s ease-in-out;
   border-radius: 0;
   position: static; /* Brutalism doesn't need the absolute positioning trick */
-}
-
-[data-theme='neo-brutalism'] .video-card-container:hover .video-card,
-[data-theme='dark-brutalism'] .video-card-container:hover .video-card {
-  transform: translate(-4px, -4px);
-  box-shadow: 10px 10px 0 var(--text-color);
-  position: static; /* Keep it in the flow for this theme */
 }
 
 [data-theme='neo-brutalism'] .video-card-thumbnail,
@@ -124,5 +135,12 @@
   }
   .video-grid {
     gap: 3rem 1rem;
+  }
+
+  /* On mobile, show a snippet of the description by default */
+  .video-card-description {
+    max-height: 3.6em; /* Show approx. 3 lines */
+    opacity: 1;
+    margin-top: 0.5rem;
   }
 }

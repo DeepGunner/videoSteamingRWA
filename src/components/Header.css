@@ -154,3 +154,9 @@
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
+
+@media (max-width: 480px) {
+  .request-button {
+    display: none; /* Hide the request button on very small screens */
+  }
+}
