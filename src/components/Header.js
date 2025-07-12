@@ -8,11 +8,10 @@ const Header = () => {
     <header className="app-header">
       <Link to="/" className="header-logo-link">
         <div className="logo">
-          <span className="logo-char" style={{'--i': 1}}>N</span>
-          <span className="logo-char" style={{'--i': 2}}>F</span>
-          <span className="logo-char" style={{'--i': 3}}>S</span>
+          <span className="logo-char" style={{'--i': 1}}>S</span>
+          <span className="logo-char" style={{'--i': 2}}>V</span>
         </div>
-        <h1 className="header-title">Netflix for Shruti</h1>
+        <h1 className="header-title">Shruti's Vault</h1>
       </Link>
       <ThemeSwitcher />
     </header>

@@ -120,6 +120,13 @@
   }
 }
 
+@media (max-width: 576px) {
+  .main-content {
+    padding: 0 1rem;
+    gap: 1.5rem;
+  }
+}
+
 .error-message {
   color: var(--primary-color);
   padding: 1rem;

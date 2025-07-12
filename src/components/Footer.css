@@ -18,3 +18,10 @@
   border-top: 3px solid var(--text-color);
   font-weight: 700;
 }
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .app-footer {
+    padding: 1rem;
+  }
+}

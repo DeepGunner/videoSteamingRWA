@@ -112,3 +112,17 @@
 [data-theme='dark-brutalism'] .video-card-title {
   font-weight: 700;
 }
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .video-gallery {
+    padding: 1rem;
+  }
+  .page-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .video-grid {
+    gap: 3rem 1rem;
+  }
+}

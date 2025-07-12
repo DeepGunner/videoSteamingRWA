@@ -125,3 +125,18 @@
 [data-theme='dark-brutalism'] .logo::after {
   display: none; /* Disable shimmer for brutalism */
 }
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 15px 20px;
+    margin-bottom: 1rem;
+  }
+  .logo {
+    font-size: 2rem;
+  }
+  .header-title {
+    /* Hide the full title on very small screens to save space */
+    font-size: 1.2rem;
+  }
+}
