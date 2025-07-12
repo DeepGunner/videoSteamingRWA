@@ -28,15 +28,15 @@ body[data-theme='light'] {
   --background-color: #f8f9fa;
   --text-color: #212529;
   --text-color-darker: #6c757d;
-  --primary-color: #007bff;
-  --primary-color-hover: #0056b3;
+  --primary-color: #4dabf7; /* Lighter, softer blue */
+  --primary-color-hover: #339af0;
   --card-background: #ffffff; /* Use a solid white for better contrast */
-  --secondary-background: #dde8f5;
+  --secondary-background: #d0ebff; /* Lighter secondary background */
 
-  background: linear-gradient(45deg, rgba(0, 123, 255, 0.15) 0%, transparent 70%),
+  background: linear-gradient(45deg, rgba(77, 171, 247, 0.15) 0%, transparent 70%),
     linear-gradient(135deg, rgba(32, 201, 151, 0.1) 10%, transparent 80%),
     linear-gradient(225deg, rgba(255, 235, 59, 0.1) 10%, transparent 80%),
-    linear-gradient(315deg, rgba(0, 123, 255, 0.2) 100%, transparent 70%);
+    linear-gradient(315deg, rgba(77, 171, 247, 0.2) 100%, transparent 70%);
   background-color: var(--background-color);
   background-size: 400% 400%;
   animation: move-bg 20s ease-in-out infinite;

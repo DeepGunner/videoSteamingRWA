@@ -32,7 +32,7 @@ export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
     // Ensure the saved theme is a valid key in our themes object.
-    return savedTheme && themes[savedTheme] ? savedTheme : 'netflix';
+    return savedTheme && themes[savedTheme] ? savedTheme : 'dark-brutalism';
   });
 
   // Effect to update the body attribute and save to localStorage whenever the theme changes.

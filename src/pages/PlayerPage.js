@@ -36,7 +36,7 @@ function PlayerPage() {
               </div>
             )}
           </div>
-          {currentVideo && <h2 className="video-title">{currentVideo.filename}</h2>}
+          {currentVideo && <h2 className="video-title">{currentVideo.title}</h2>}
         </section>
         <aside className="video-list-section">
           <h3>Playlist</h3>
@@ -54,7 +54,7 @@ function PlayerPage() {
                           alt={`Thumbnail for ${video.filename}`}
                           className="video-list-thumbnail"
                         />
-                        <span className="video-list-title">{video.filename}</span>
+                        <span className="video-list-title">{video.title}</span>
                       </Link>
                     </li>
                   ))

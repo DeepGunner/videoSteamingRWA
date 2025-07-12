@@ -30,9 +30,9 @@ function LandingPage() {
                       className="video-card-thumbnail"
                     />
                     <div className="video-card-info">
-                      <div className="video-card-title">{video.filename}</div>
+                      <div className="video-card-title">{video.title}</div>
                       <p className="video-card-description">
-                        A brief description of the video content would appear here. Click to watch now!
+                        {video.description}
                       </p>
                     </div>
                   </Link>

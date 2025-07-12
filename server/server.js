@@ -13,6 +13,14 @@ const app = express();
 const port = 4000;
 // Point this to the new, external location of your video files.
 const videosDir = '/Users/deepgunner/Desktop/MyVideos';
+const metadataPath = path.join(__dirname, 'metadata.json');
+let metadata = {};
+try {
+    // Load the metadata from the JSON file
+    metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+} catch (err) {
+    console.warn('Could not load metadata.json. Using default titles and descriptions.');
+}
 const cacheDir = path.join(__dirname, 'cache');
 const thumbnailsDir = path.join(cacheDir, 'thumbnails');
 
@@ -85,11 +93,17 @@ app.get('/videos', async (req, res) => {
 
         const baseUrl = `${req.protocol}://${req.get('host')}`;
 
-        const videoFiles = supportedFiles.map(file => ({
-            filename: file,
-            type: 'video/mp4', // We serve everything as mp4
-            thumbnailUrl: `${baseUrl}/thumbnails/${file}.jpg`
-        }));
+        const videoFiles = supportedFiles.map(file => {
+            const fileMetadata = metadata[file] || {};
+            const title = path.parse(file).name;
+            return {
+                filename: file,
+                title: title,
+                description: fileMetadata.description || `A short summary of the movie '${title}'. Perfect for a cozy evening!`,
+                type: 'video/mp4', // We serve everything as mp4
+                thumbnailUrl: `${baseUrl}/thumbnails/${file}.jpg`
+            };
+        });
 
         console.log('Serving video files with thumbnails:', videoFiles);
         res.json(videoFiles);

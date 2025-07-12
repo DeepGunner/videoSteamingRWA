@@ -77,10 +77,6 @@
   text-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
 
-[data-theme='light'] .logo-char {
-  color: #007bff;
-}
-
 [data-theme='aurora'] .logo-char {
   color: #8a42f4;
   text-shadow: 0 0 10px rgba(138, 66, 244, 0.5);
