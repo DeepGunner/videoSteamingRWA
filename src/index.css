@@ -30,10 +30,16 @@ body[data-theme='light'] {
   --text-color-darker: #6c757d;
   --primary-color: #007bff;
   --primary-color-hover: #0056b3;
-  --card-background: #e9ecef;
+  --card-background: #ffffff; /* Use a solid white for better contrast */
   --secondary-background: #dde8f5;
-  background: var(--background-color);
-  animation: none;
+
+  background: linear-gradient(45deg, rgba(0, 123, 255, 0.15) 0%, transparent 70%),
+    linear-gradient(135deg, rgba(32, 201, 151, 0.1) 10%, transparent 80%),
+    linear-gradient(225deg, rgba(255, 235, 59, 0.1) 10%, transparent 80%),
+    linear-gradient(315deg, rgba(0, 123, 255, 0.2) 100%, transparent 70%);
+  background-color: var(--background-color);
+  background-size: 400% 400%;
+  animation: move-bg 20s ease-in-out infinite;
 }
 
 /* Aurora Theme */
