@@ -11,7 +11,8 @@ ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 const app = express();
 const port = 4000;
-const videosDir = path.join(__dirname, 'videos');
+// Point this to the new, external location of your video files.
+const videosDir = '/Users/deepgunner/Desktop/MyVideos';
 const cacheDir = path.join(__dirname, 'cache');
 const thumbnailsDir = path.join(cacheDir, 'thumbnails');
 
