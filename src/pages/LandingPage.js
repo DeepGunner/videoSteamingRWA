@@ -12,7 +12,7 @@ function LandingPage() {
     <div className="landing-page">
       <Header />
       <main className="video-gallery">
-        <h2 className="page-title">Available Videos</h2>
+        <h2 className="page-title">Server Down 😰, will be back shortly 😶‍🌫️</h2>
         {error && <p className="error-message">Error: {error}</p>}
         <div className="video-grid">
           {loading ? (
