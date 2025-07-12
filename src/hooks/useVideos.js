@@ -21,7 +21,7 @@ export function useVideos() {
         }
       } catch (err) {
         if (isMounted) {
-          console.error("Failed to fetch video list:", err);
+          console.error("Server down, will be back shortly:", err);
           setError(err.message);
         }
       } finally {

@@ -100,11 +100,12 @@ app.get('/videos', async (req, res) => {
 
         const videoFiles = supportedFiles.map(file => {
             const fileMetadata = metadata[file] || {};
-            const title = path.parse(file).name;
+            const defaultTitle = path.parse(file).name;
             return {
                 filename: file,
-                title: title,
-                description: fileMetadata.description || `A short summary of the movie '${title}'. Perfect for a cozy evening!`,
+                // Use the title from metadata if it exists, otherwise use the filename.
+                title: fileMetadata.title || defaultTitle,
+                description: fileMetadata.description || `A short summary of the movie '${defaultTitle}'. Perfect for a cozy evening!`,
                 type: 'video/mp4', // We serve everything as mp4
                 thumbnailUrl: `${baseUrl}/thumbnails/${file}.jpg`
             };
