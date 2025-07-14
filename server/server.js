@@ -5,9 +5,9 @@ const os = require('os');
 const cors = require('cors');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
-// Load environment variables from .env file in the server directory
-require('dotenv').config();
-const Brevo = require('@getbrevo/brevo');
+const nodemailer = require('nodemailer');
+// Load environment variables from a .env file in this directory
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const { PassThrough } = require('stream');
 
@@ -15,7 +15,9 @@ ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 const app = express();
 const port = 4000;
-// Point this to the new, external location of your video files.
+// This points to your external videos folder.
+// For better portability, you could consider moving this to an environment variable,
+// but for your specific setup, an absolute path is perfectly fine.
 const videosDir = '/Users/deepgunner/Desktop/MyVideos';
 const metadataPath = path.join(__dirname, 'metadata.json');
 let metadata = {};
@@ -37,26 +39,38 @@ const mimeTypes = {
 
 // Ensure the videos directory exists
 if (!fs.existsSync(videosDir)) {
-    fs.mkdirSync(videosDir);
+    fs.mkdirSync(videosDir, { recursive: true });
     console.log(`Created videos directory at ${videosDir}`);
     console.log('Please add some .mp4 video files to it.');
 }
 
 // Ensure the cache directory exists
 if (!fs.existsSync(cacheDir)) {
-    fs.mkdirSync(cacheDir);
+    fs.mkdirSync(cacheDir, { recursive: true });
     console.log(`Created cache directory at ${cacheDir}`);
 }
 
 // Ensure the thumbnails directory exists
 if (!fs.existsSync(thumbnailsDir)) {
-    fs.mkdirSync(thumbnailsDir);
+    fs.mkdirSync(thumbnailsDir, { recursive: true });
     console.log(`Created thumbnails directory at ${thumbnailsDir}`);
 }
 
 app.use(cors());
+app.options('*', cors()); // Enable pre-flight requests for all routes
 app.use(express.json()); // Middleware to parse JSON bodies
 app.use('/thumbnails', express.static(thumbnailsDir)); // Serve thumbnails statically
+
+// Check for required environment variables on startup
+if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD || !process.env.TO_EMAIL_ADDRESS) {
+    console.warn(`
+    ###########################################################################
+    # WARNING: Email sending is not configured.                               #
+    # Please create a 'server/.env' file with your Gmail credentials.         #
+    # The movie request feature will not work until this is configured.       #
+    ###########################################################################
+    `);
+}
 
 function generateThumbnail(videoFilename) {
     return new Promise((resolve, reject) => {
@@ -127,27 +141,41 @@ app.post('/request', async (req, res) => {
         return res.status(400).send({ message: 'Movie title is required.' });
     }
 
-    // Brevo API setup
-    const defaultClient = Brevo.ApiClient.instance;
-    const apiKey = defaultClient.authentications['api-key'];
-    apiKey.apiKey = process.env.BREVO_API_KEY;
+    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+        console.error('Gmail credentials are not set. Cannot send email.');
+        return res.status(500).send({ message: 'Email service is not configured on the server.' });
+    }
 
-    const apiInstance = new Brevo.TransactionalEmailsApi();
-    const sendSmtpEmail = new Brevo.SendSmtpEmail();
+    // Nodemailer setup using Gmail
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_APP_PASSWORD, // Use the App Password here
+        },
+    });
 
-    sendSmtpEmail.to = [{ email: process.env.TO_EMAIL_ADDRESS }];
-    // Note: The sender email must be a verified sender in your Brevo account.
-    sendSmtpEmail.sender = { email: process.env.FROM_EMAIL_ADDRESS, name: "Shruti's Vault" };
-    sendSmtpEmail.subject = `New Movie Request: ${movieTitle}`;
-    sendSmtpEmail.htmlContent = `<strong>Shruti has requested the movie:</strong> <p>"${movieTitle}"</p>`;
+    const mailOptions = {
+        from: `"Shruti's Vault" <${process.env.GMAIL_USER}>`, // Sender address
+        to: process.env.TO_EMAIL_ADDRESS, // List of receivers
+        subject: `New Movie Request: ${movieTitle}`, // Subject line
+        html: `
+          <html>
+            <body>
+              <h2>New Movie Request!</h2>
+              <p>A request has been submitted for the following movie:</p>
+              <h3>${movieTitle}</h3>
+            </body>
+          </html>`, // html body
+    };
 
     try {
-        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        await transporter.sendMail(mailOptions);
         console.log(`Request email sent for: ${movieTitle}`);
         res.status(200).send({ message: 'Request sent successfully!' });
     } catch (error) {
-        console.error('Error sending email with Brevo:', error);
-        res.status(500).send({ message: 'Failed to send request.' });
+        console.error('Error sending email with Nodemailer:', error);
+        res.status(500).send({ message: 'Failed to send request. Check server logs for details.' });
     }
 });
 
