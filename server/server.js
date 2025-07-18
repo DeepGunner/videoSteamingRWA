@@ -23,6 +23,8 @@ if (!videosDir) {
     console.error("FATAL ERROR: VIDEOS_DIR environment variable is not set. Please add it to the 'server/.env' file.");
     process.exit(1); // Exit if the video directory is not configured
 }
+
+console.log(`INFO: Using video directory: ${videosDir}`);
 const metadataPath = path.join(__dirname, 'metadata.json');
 let metadata = {};
 try {
