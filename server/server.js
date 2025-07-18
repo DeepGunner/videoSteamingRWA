@@ -16,9 +16,13 @@ ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 const app = express();
 const port = 4000;
 // This points to your external videos folder.
-// For better portability, you could consider moving this to an environment variable,
-// but for your specific setup, an absolute path is perfectly fine.
-const videosDir = '/Users/deepgunner/Desktop/MyVideos';
+// It's configured via an environment variable for portability between your
+// local machine and your Oracle VM.
+const videosDir = process.env.VIDEOS_DIR;
+if (!videosDir) {
+    console.error("FATAL ERROR: VIDEOS_DIR environment variable is not set. Please add it to the 'server/.env' file.");
+    process.exit(1); // Exit if the video directory is not configured
+}
 const metadataPath = path.join(__dirname, 'metadata.json');
 let metadata = {};
 try {

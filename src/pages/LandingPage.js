@@ -12,8 +12,14 @@ function LandingPage() {
     <div className="landing-page">
       <Header />
       <main className="video-gallery">
-        <h2 className="page-title">Server Down 😰, will be back shortly 😶‍🌫️</h2>
-        {error && <p className="error-message">Error: {error}</p>}
+        {error ? (
+          <div className="error-container">
+            <h2 className="page-title">Server Down 😰!</h2>
+            <p className="error-message">Could not connect to the server. It might be offline or busy. Please try again later.</p>
+          </div>
+        ) : (
+          <h2 className="page-title">Available Videos</h2>
+        )}
         <div className="video-grid">
           {loading ? (
             // Render 8 skeleton cards while loading
@@ -38,7 +44,7 @@ function LandingPage() {
                   </Link>
                 </div>
               ))
-            ) : (<p>No videos found. Add videos to the 'server/videos' directory.</p>))
+            ) : (<p>No videos found. Add videos to the 'MyVideos' directory on your Desktop.</p>))
           )}
         </div>
       </main>
